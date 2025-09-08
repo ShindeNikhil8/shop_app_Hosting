@@ -25,10 +25,12 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 
 // CORS: allow your frontend (optional if serving React from Express)
-app.use(cors({
-  origin: "https://sunny-melba-247af7.netlify.app",
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "https://sunny-melba-247af7.netlify.app", // frontend URL
+    credentials: true,
+  })
+);
 
 // API Routes
 app.use("/api/products", productRoutes);
