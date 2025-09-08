@@ -17,7 +17,8 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:3000",
+  // Add your Netlify frontend URL here
+  origin: "https://sunny-melba-247af7.netlify.app", 
   credentials: true
 }));
 app.use(express.json());
@@ -35,5 +36,3 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-
-
