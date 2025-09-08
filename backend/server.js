@@ -6,7 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import cors from "cors";
 import errorHandler from "./middleware/errorMiddleware.js";
-import contactRoutes from "./routes/ContactRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import limitedItemsRoutes from "./routes/limitedItems.js";
 
