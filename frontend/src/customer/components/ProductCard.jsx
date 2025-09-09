@@ -9,7 +9,7 @@ const ProductCard = ({ product, onUpdate, view = "grid", isOwner = false, addToC
   const handleLike = async (e) => {
     e.stopPropagation();
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${product._id}/like`, { method: "PATCH" });
+      const res = await fetch(`https://shop-app-hosting.vercel.app/api/products/${product._id}/like`, { method: "PATCH" });
       if (!res.ok) throw new Error("Failed to like product");
       const updatedProduct = await res.json();
       onUpdate(updatedProduct);
@@ -22,7 +22,7 @@ const ProductCard = ({ product, onUpdate, view = "grid", isOwner = false, addToC
     e.stopPropagation();
     if (product.stock <= 0) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${product._id}/sell`, { method: "PATCH" });
+      const res = await fetch(`https://shop-app-hosting.vercel.app/api/products/${product._id}/sell`, { method: "PATCH" });
       if (!res.ok) throw new Error("Failed to sell product");
       const updatedProduct = await res.json();
       onUpdate(updatedProduct);

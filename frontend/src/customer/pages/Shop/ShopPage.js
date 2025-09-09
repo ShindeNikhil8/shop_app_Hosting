@@ -37,7 +37,7 @@ const ShopPage = () => {
           query.append("minPrice", filters.price[0]);
           query.append("maxPrice", filters.price[1]);
         }
-        const { data } = await axios.get(`http://localhost:5000/api/products/filter?${query.toString()}`);
+        const { data } = await axios.get(`https://shop-app-hosting.vercel.app/api/products/filter?${query.toString()}`);
         setProducts(data.filter((p) => p.stock > 0));
       } catch (err) {
         console.error(err);

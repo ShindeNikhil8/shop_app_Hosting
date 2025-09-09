@@ -47,7 +47,7 @@ const OwnerStock = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/products", {
+      const res = await axios.get("https://shop-app-hosting.vercel.app/api/products", {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setProducts(res.data);
@@ -89,12 +89,12 @@ const OwnerStock = () => {
 
     try {
       if (editingId) {
-        await axios.patch(`http://localhost:5000/api/products/${editingId}`, submitData, {
+        await axios.patch(`https://shop-app-hosting.vercel.app/api/products/${editingId}`, submitData, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         toast.success("Product updated successfully ✅");
       } else {
-        await axios.post("http://localhost:5000/api/products", submitData, {
+        await axios.post("https://shop-app-hosting.vercel.app/api/products", submitData, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         toast.success("Product added successfully ✅");
@@ -118,7 +118,7 @@ const OwnerStock = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/products/${id}`, {
+      await axios.delete(`https://shop-app-hosting.vercel.app/api/products/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setProducts(products.filter((p) => p._id !== id));

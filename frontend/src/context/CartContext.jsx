@@ -12,7 +12,7 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     if (user) {
       axios
-        .get("http://localhost:5000/api/cart", {
+        .get("https://shop-app-hosting.vercel.app/api/cart", {
           headers: { Authorization: `Bearer ${user.token}` },
         })
         .then((res) => setCart(res.data))
@@ -29,7 +29,7 @@ export const CartProvider = ({ children }) => {
     }
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/cart/add",
+        "https://shop-app-hosting.vercel.app/api/cart/add",
         { productId, quantity },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -43,7 +43,7 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (productId) => {
     try {
       const res = await axios.delete(
-        `http://localhost:5000/api/cart/remove/${productId}`,
+        `https://shop-app-hosting.vercel.app/api/cart/remove/${productId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       setCart(res.data);
@@ -56,7 +56,7 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = async (productId, quantity) => {
     try {
       const res = await axios.patch(
-        "http://localhost:5000/api/cart/update",
+        "https://shop-app-hosting.vercel.app/api/cart/update",
         { productId, quantity },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );

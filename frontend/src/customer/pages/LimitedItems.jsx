@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa";
 
-const API_ALL_PRODUCTS = "http://localhost:5000/api/products";
-const API_LIMITED_ITEMS = "http://localhost:5000/api/limited-items";
+const API_ALL_PRODUCTS = "https://shop-app-hosting.vercel.app/api/products";
+const API_LIMITED_ITEMS = "https://shop-app-hosting.vercel.app/api/limited-items";
 
 const LimitedItems = () => {
   const [limitedItems, setLimitedItems] = useState({ inStockItems: [], outOfStockItems: [] });

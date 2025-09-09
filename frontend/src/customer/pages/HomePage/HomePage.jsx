@@ -14,7 +14,7 @@ const HomePage = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/products")
+      .get("https://shop-app-hosting.vercel.app/api/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
   }, []);

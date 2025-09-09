@@ -17,7 +17,7 @@ const Profile = () => {
       }
 
       try {
-        const res = await axios.get("http://localhost:5000/api/profile", {
+        const res = await axios.get("https://shop-app-hosting.vercel.app/api/profile", {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },

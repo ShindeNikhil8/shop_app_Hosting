@@ -20,7 +20,7 @@ const ProductDetailPage = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/products/${id}`)
+      .get(`https://shop-app-hosting.vercel.app/api/products/${id}`)
       .then((res) => {
         setProduct(res.data.product);
         setRelated(res.data.relatedProducts);
@@ -63,14 +63,14 @@ const ProductDetailPage = () => {
     }
 
     try {
-      await axios.patch(`http://localhost:5000/api/products/${id}/review`, {
+      await axios.patch(`https://shop-app-hosting.vercel.app/api/products/${id}/review`, {
         review: { name: user.username, comment: review.comment },
         rating: Number(review.rating),
       });
 
       setReview({ name: "", rating: 0, comment: "" });
 
-      const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+      const res = await axios.get(`https://shop-app-hosting.vercel.app/api/products/${id}`);
       setProduct(res.data.product);
       setShowReviews(true);
       toast.success("Review added ✅");
@@ -153,7 +153,7 @@ const ProductDetailPage = () => {
                 }
                 try {
                   const res = await axios.patch(
-                    `http://localhost:5000/api/products/${id}/sell`,
+                    `https://shop-app-hosting.vercel.app/api/products/${id}/sell`,
                     { quantity: qty }
                   );
                   setProduct(res.data); // update product stock
