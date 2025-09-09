@@ -43,7 +43,7 @@ const OwnerStock = () => {
 
   useEffect(() => {
     if (user) fetchProducts();
-  }, [user]);
+  });
 
   const fetchProducts = async () => {
     try {
@@ -75,8 +75,7 @@ const OwnerStock = () => {
     if (type === "Tag") setTags([...tags, value]);
   };
 
-  const handleDeviceImages = (e) => setDeviceImages([...e.target.files]);
-  const handleGoogleImage = (e) => setGoogleImage(e.target.value);
+
 
   const handleSubmit = async () => {
     const submitData = {
