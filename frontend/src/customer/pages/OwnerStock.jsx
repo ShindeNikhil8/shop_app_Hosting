@@ -36,9 +36,9 @@ const OwnerStock = () => {
 
   // Tags combining all categories and subcategories
   const [tags, setTags] = useState([
-    "Toys", "Educational Toys", "Playsets", "Control Toys", "Stuffed Toys", "Eco-Friendly Toys",
-    "Stationary", "Pens", "Pencils", "Notebooks", "Markers",
-    "Gifts", "Gift Cards", "Plush Toys", "Accessories"
+    "Educational Toys", "Playsets", "Control Toys", "Stuffed Toys", "Eco-Friendly Toys",
+    "Pens", "Pencils", "Notebooks", "Markers",
+    "Gift Cards", "Plush Toys", "Accessories","Featured", "New Arrival", "Best Seller"
   ]);
 
   useEffect(() => {
