@@ -109,11 +109,27 @@ const OwnerStock = () => {
   };
 
   const handleEdit = (product) => {
-    setFormData({ ...product });
-    setEditingId(product._id);
-    setDeviceImages([]);
-    setGoogleImage("");
-  };
+  setFormData({
+    title: product.title || "",
+    desc: product.desc || "",
+    price: product.price || 0,
+    oldPrice: product.oldPrice || 0,
+    tag: product.tag || "",
+    mainCategory: product.mainCategory || "",
+    subCategory: product.subCategory || "",
+    ageGroup: product.ageGroup || "",
+    sku: product.sku || "",
+    stock: product.stock || 10,
+  });
+
+  setEditingId(product._id);
+
+  // ✅ Load existing product images into the form
+  setDeviceImages(product.images && product.images.length > 0 ? product.images : []);
+
+  setGoogleImage("");
+};
+
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product?")) return;
@@ -270,41 +286,60 @@ const OwnerStock = () => {
         />
 
         {/* Images Section */}
-<div className="space-y-2">
-  <label className="font-semibold">Product Images</label>
-  {deviceImages.map((img, idx) => (
-    <div key={idx} className="flex gap-2 items-center">
-      <input
-        type="text"
-        placeholder={`Image URL ${idx + 1}`}
-        value={img}
-        onChange={(e) => {
-          const newImages = [...deviceImages];
-          newImages[idx] = e.target.value;
-          setDeviceImages(newImages);
-        }}
-        className="border p-2 rounded flex-1"
-      />
-      <button
-        type="button"
-        onClick={() => {
-          setDeviceImages(deviceImages.filter((_, i) => i !== idx));
-        }}
-        className="bg-red-500 text-white px-2 py-1 rounded"
-      >
-        Delete
-      </button>
-    </div>
-  ))}
 
-  <button
-    type="button"
-    onClick={() => setDeviceImages([...deviceImages, ""])}
-    className="bg-green-500 text-white px-4 py-2 rounded mt-2"
-  >
-    + Add Image
-  </button>
-</div>
+        <div className="space-y-2">
+          <label className="font-semibold">Product Images</label>
+          {deviceImages.map((img, idx) => (
+            <div key={idx} className="flex gap-2 items-center">
+              {/* Image URL input */}
+              <input
+                type="text"
+                placeholder={`Image URL ${idx + 1}`}
+                value={img}
+                onChange={(e) => {
+                  const newImages = [...deviceImages];
+                  newImages[idx] = e.target.value;
+                  setDeviceImages(newImages);
+                }}
+                className="border p-2 rounded flex-1"
+              />
+
+              {/* ✅ Live Preview */}
+              {img && (
+                <img
+                  src={img}
+                  alt={`Preview ${idx + 1}`}
+                  className="w-16 h-16 object-cover rounded border"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/64?text=No+Image"; // fallback if link is broken
+                  }}
+                />
+              )}
+
+              {/* Delete button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setDeviceImages(deviceImages.filter((_, i) => i !== idx));
+                }}
+                className="bg-red-500 text-white px-2 py-1 rounded"
+              >
+                Delete
+              </button>
+            </div>
+          ))}
+
+          {/* Add Image Button */}
+          <button
+            type="button"
+            onClick={() => setDeviceImages([...deviceImages, ""])}
+            className="bg-green-500 text-white px-4 py-2 rounded mt-2"
+          >
+            + Add Image
+          </button>
+        </div>
+
 
 
         <div className="flex gap-2">
