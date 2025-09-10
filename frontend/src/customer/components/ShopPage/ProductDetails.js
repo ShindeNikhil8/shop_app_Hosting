@@ -91,7 +91,7 @@ const ProductDetailPage = () => {
             <img
               src={mainImage}
               alt={product.title}
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-contain rounded-lg"
             />
           </div>
           <div className="flex gap-2 overflow-x-auto mt-2">
@@ -100,7 +100,7 @@ const ProductDetailPage = () => {
                 key={idx}
                 src={img}
                 alt={`${product.title}-${idx}`}
-                className={`w-20 h-20 object-cover cursor-pointer border rounded ${
+                className={`w-20 h-20 object-contain cursor-pointer border rounded ${
                   img === mainImage ? "border-blue-600" : ""
                 }`}
                 onClick={() => setMainImage(img)}
