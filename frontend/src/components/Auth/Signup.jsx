@@ -13,8 +13,8 @@ const SignUp = () => {
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  const handleOwnerChange = (e) =>
-    setFormData({ ...formData, isOwner: e.target.checked });
+  // const handleOwnerChange = (e) =>
+  //   setFormData({ ...formData, isOwner: e.target.checked });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,10 +57,10 @@ const SignUp = () => {
           className="w-full p-2 border rounded"
           required
         />
-        <label className="flex items-center space-x-2">
+        {/* <label className="flex items-center space-x-2">
           <input type="checkbox" checked={formData.isOwner} onChange={handleOwnerChange} />
           <span>Do you want to be Owner?</span>
-        </label>
+        </label> */}
         <button
           type="submit"
           className="w-full bg-green-600 text-white p-2 rounded"

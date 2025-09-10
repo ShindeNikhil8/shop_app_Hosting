@@ -309,7 +309,7 @@ const OwnerStock = () => {
                 <img
                   src={img}
                   alt={`Preview ${idx + 1}`}
-                  className="w-16 h-16 object-cover rounded border"
+                  className="w-16 h-16 object-contain rounded border"
                   onError={(e) => {
                     e.target.src =
                       "https://via.placeholder.com/64?text=No+Image"; // fallback if link is broken
