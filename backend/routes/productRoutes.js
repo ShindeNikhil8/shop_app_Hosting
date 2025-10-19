@@ -1,13 +1,15 @@
 import express from "express";
 import Product from "../models/Product.js";
-import upload from "../middleware/upload.js";
+import upload from "../middleware/cloudinary.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Upload buffer to Cloudinary
+/**
+ * Upload a Buffer to Cloudinary using upload_stream
+ */
 function uploadBufferToCloudinary(buffer, options = {}) {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
@@ -48,44 +50,36 @@ router.get("/:id", async (req, res) => {
 // ---------------- CREATE PRODUCT ----------------
 router.post("/", protect, upload.array("images", 6), async (req, res) => {
   try {
-    const { title, desc, images, price, oldPrice, tag, mainCategory, subCategory, ageGroup, sku, stock } = req.body;
+    let images = req.body.images || [];
+    if (!Array.isArray(images)) images = [images];
 
-    const imagesArray = [];
+    images = images.map(img => (typeof img === "string" ? { url: img } : img));
 
-    // Handle images from frontend URLs
-    if (images) {
-      const parsed = typeof images === "string" ? JSON.parse(images) : images;
-      if (Array.isArray(parsed)) {
-        parsed.forEach((img) => {
-          if (typeof img === "string") imagesArray.push({ url: img });
-          else if (img && img.url) imagesArray.push(img);
-        });
-      }
-    }
-
-    // Handle uploaded files
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const result = await uploadBufferToCloudinary(file.buffer, {
           folder: "shop_app/products",
           resource_type: "image",
         });
-        imagesArray.push({ url: result.secure_url, public_id: result.public_id });
+        images.push({ url: result.secure_url, public_id: result.public_id });
       }
     }
 
     const product = new Product({
-      title,
-      desc,
-      images: imagesArray,
-      price,
-      oldPrice,
-      tag,
-      mainCategory,
-      subCategory,
-      ageGroup,
-      sku,
-      stock,
+      title: req.body.title || "Untitled Product",
+      desc: req.body.desc || "",
+      mainCategory: req.body.mainCategory || "",
+      subCategory: req.body.subCategory || "",
+      ageGroup: req.body.ageGroup || "",
+      price: Number(req.body.price) || 0,
+      oldPrice: Number(req.body.oldPrice) || 0,
+      tag: req.body.tag || "Featured",
+      sku: req.body.sku || "",
+      stock: Number(req.body.stock) || 0,
+      images,
+      likes: 0,
+      rating: 0,
+      reviews: [],
     });
 
     const savedProduct = await product.save();
@@ -101,18 +95,17 @@ router.post("/:id/images", protect, upload.array("images", 6), async (req, res) 
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    const newImages = [];
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
-        const result = await uploadBufferToCloudinary(file.buffer, {
-          folder: "shop_app/products",
-          resource_type: "image",
-        });
-        newImages.push({ url: result.secure_url, public_id: result.public_id });
-      }
+    if (!req.files || req.files.length === 0)
+      return res.status(400).json({ message: "No files uploaded" });
+
+    for (const file of req.files) {
+      const result = await uploadBufferToCloudinary(file.buffer, {
+        folder: "shop_app/products",
+        resource_type: "image",
+      });
+      product.images.push({ url: result.secure_url, public_id: result.public_id });
     }
 
-    product.images.push(...newImages);
     await product.save();
     res.status(200).json(product);
   } catch (err) {
