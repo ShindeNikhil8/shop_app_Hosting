@@ -100,8 +100,8 @@ const OwnerStock = () => {
       const urlImages = images.filter(img => img.type === "url").map(img => img.data);
       const fileImages = images.filter(img => img.type === "file");
 
-      urlImages.forEach(url => form.append("images[]", url)); // backend will accept URLs directly
-      fileImages.forEach(f => form.append("images", f.data)); // backend will upload to Cloudinary
+      urlImages.forEach(url => form.append("images[]", url));
+      fileImages.forEach(f => form.append("images", f.data));
 
       if (editingId) {
         await axios.patch(`https://shop-app-hosting.vercel.app/api/products/${editingId}`, form, {
@@ -138,9 +138,7 @@ const OwnerStock = () => {
     });
 
     setEditingId(product._id);
-    setImages(
-      product.images?.map(img => ({ type: "url", data: img.url || img })) || []
-    );
+    setImages(product.images?.map(img => ({ type: "url", data: img.url || img })) || []);
   };
 
   const handleDelete = async (id) => {
@@ -184,33 +182,67 @@ const OwnerStock = () => {
         <input name="title" placeholder="Title" value={formData.title} onChange={handleChange} className="border p-2 rounded w-full"/>
         <textarea name="desc" placeholder="Description" value={formData.desc} onChange={handleChange} className="border p-2 rounded w-full"/>
 
-        {/* Category, Subcategory, Age Group, SKU, Tag, Price, OldPrice, Stock (same as before) */}
-        {/* ... same as your current code ... */}
-
-        {/* Image Mode Toggle */}
-        <div className="flex gap-2 mt-2">
-          <button
-            type="button"
-            onClick={() => setImageMode("url")}
-            className={`px-4 py-2 rounded ${imageMode === "url" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-          >
-            Use URL
-          </button>
-          <button
-            type="button"
-            onClick={() => setImageMode("device")}
-            className={`px-4 py-2 rounded ${imageMode === "device" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-          >
-            Upload from Device
-          </button>
+        {/* Main Category */}
+        <div className="flex gap-2 items-center">
+          <select name="mainCategory" value={formData.mainCategory} onChange={handleChange} className="border p-2 rounded flex-1">
+            <option value="">Select Main Category</option>
+            {Object.keys(categories).map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <button type="button" onClick={() => handleAddOption("Main Category")} className="bg-green-500 text-white px-2 py-1 rounded">++</button>
         </div>
 
-        {/* Images Section */}
-        <div className="space-y-2 mt-2">
+        {/* Sub Category */}
+        <div className="flex gap-2 items-center">
+          <select name="subCategory" value={formData.subCategory} onChange={handleChange} className="border p-2 rounded flex-1">
+            <option value="">Select Sub Category</option>
+            {formData.mainCategory && categories[formData.mainCategory]?.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <button type="button" onClick={() => handleAddOption("Sub Category")} className="bg-green-500 text-white px-2 py-1 rounded">++</button>
+        </div>
+
+        {/* Age Group */}
+        <div className="flex gap-2 items-center">
+          <select name="ageGroup" value={formData.ageGroup} onChange={handleChange} className="border p-2 rounded flex-1">
+            <option value="">Select Age Group</option>
+            {ageGroups.map((a) => <option key={a} value={a}>{a}</option>)}
+          </select>
+          <button type="button" onClick={() => handleAddOption("Age Group")} className="bg-green-500 text-white px-2 py-1 rounded">++</button>
+        </div>
+
+        {/* SKU */}
+        <div className="flex gap-2 items-center">
+          <select name="sku" value={formData.sku} onChange={handleChange} className="border p-2 rounded flex-1">
+            <option value="">Select SKU</option>
+            {skuOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <button type="button" onClick={() => handleAddOption("SKU")} className="bg-green-500 text-white px-2 py-1 rounded">++</button>
+        </div>
+
+        {/* Tag */}
+        <div className="flex gap-2 items-center">
+          <select name="tag" value={formData.tag} onChange={handleChange} className="border p-2 rounded flex-1">
+            <option value="">Select Tag</option>
+            {tags.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <button type="button" onClick={() => handleAddOption("Tag")} className="bg-green-500 text-white px-2 py-1 rounded">++</button>
+        </div>
+
+        <input name="price" placeholder="Price" type="number" value={formData.price} onChange={handleChange} className="border p-2 rounded w-full"/>
+        <input name="oldPrice" placeholder="Old Price" type="number" value={formData.oldPrice} onChange={handleChange} className="border p-2 rounded w-full"/>
+        <input name="stock" placeholder="Stock" type="number" value={formData.stock} onChange={handleChange} className="border p-2 rounded w-full"/>
+
+        {/* Image Section */}
+        <div className="space-y-2">
           <label className="font-semibold">Product Images</label>
+
+          <div className="flex gap-2">
+            <button type="button" onClick={() => setImageMode("url")} className={`px-3 py-1 rounded ${imageMode==="url"?"bg-blue-600 text-white":"bg-gray-300"}`}>Use URL</button>
+            <button type="button" onClick={() => setImageMode("device")} className={`px-3 py-1 rounded ${imageMode==="device"?"bg-blue-600 text-white":"bg-gray-300"}`}>Upload File</button>
+          </div>
+
           {images.map((img, idx) => (
             <div key={idx} className="flex gap-2 items-center">
-              {imageMode === "url" ? (
+              {imageMode === "url" && (
                 <input
                   type="text"
                   placeholder={`Image URL ${idx + 1}`}
@@ -218,39 +250,44 @@ const OwnerStock = () => {
                   onChange={(e) => handleImageChange(idx, e.target.value)}
                   className="border p-2 rounded flex-1"
                 />
-              ) : (
-                <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, idx)} className="flex-1"/>
               )}
-
-              {/* Live Preview */}
-              {img.data && (
-                <img
-                  src={img.type === "url" ? img.data : URL.createObjectURL(img.data)}
-                  alt={`Preview ${idx + 1}`}
-                  className="w-16 h-16 object-contain rounded border"
-                  onError={(e) => { e.target.src = "https://via.placeholder.com/64?text=No+Image"; }}
-                />
+              {imageMode === "device" && (
+                <input type="file" onChange={(e) => handleFileUpload(e, idx)} className="flex-1"/>
               )}
-
-              <button type="button" onClick={() => setImages(images.filter((_, i) => i !== idx))} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+              {img.data && <img src={img.type==="file"?URL.createObjectURL(img.data):img.data} alt="Preview" className="w-16 h-16 object-contain rounded border"/>}
+              <button type="button" onClick={() => setImages(images.filter((_, i) => i!==idx))} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
             </div>
           ))}
 
-          <button type="button" onClick={() => setImages([...images, { type: imageMode, data: "" }])} className="bg-green-500 text-white px-4 py-2 rounded mt-2">
-            + Add Image
-          </button>
+          <button type="button" onClick={() => setImages([...images, { type: imageMode, data: "" }])} className="bg-green-500 text-white px-4 py-2 rounded mt-2">+ Add Image</button>
         </div>
 
         <div className="flex gap-2">
-          <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded flex-1">
-            {editingId ? "Update Product" : "Add Product"}
-          </button>
+          <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded flex-1">{editingId?"Update Product":"Add Product"}</button>
           {editingId && <button onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded flex-1">Cancel</button>}
         </div>
       </div>
 
-      {/* Product List (same as before) */}
-      {/* ... */}
+      {/* Product List */}
+      <h2 className="font-semibold mb-2">Current Stock</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {products.map((p) => (
+          <div key={p._id} className="border p-2 rounded shadow flex flex-col justify-between">
+            <h3 className="font-bold">{p.title}</h3>
+            <p>Stock: {p.stock}</p>
+            <p>Price: ₹{p.price}</p>
+            <div className="flex flex-wrap gap-2">
+              {p.images?.map((img, idx) => (
+                <img key={idx} src={img.url || img} alt={p.title} className="w-16 h-16 object-cover rounded"/>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button onClick={() => handleEdit(p)} className="bg-blue-600 text-white p-1 rounded flex-1">Edit</button>
+              <button onClick={() => handleDelete(p._id)} className="bg-red-600 text-white p-1 rounded flex-1">Delete</button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
