@@ -90,52 +90,40 @@ const OwnerStock = () => {
   // ...existing code...
 const handleSubmit = async () => {
   try {
-    if (!formData.mainCategory) {
-      toast.error("Please select a main category ⚠️");
-      return;
-    }
-
-    const urlImages = images
-      .filter(img => img.type === "url")
-      .map(img => ({ url: img.data })); // wrap in object
-    const fileImages = images
-      .filter(img => img.type === "file")
-      .map(img => img.data);
+    // Build arrays
+    const urlImages = images.filter(img => img.type === "url").map(img => img.data);
+    const fileImages = images.filter(img => img.type === "file").map(img => img.data);
 
     const headersJson = { Authorization: `Bearer ${user?.token}` };
 
     if (editingId) {
+      // 1) If there are new files, upload them to POST /api/products/:id/images
       if (fileImages.length > 0) {
         const fdFiles = new FormData();
-        fileImages.forEach(file => fdFiles.append("images", file));
-        await axios.post(
-          `https://shop-app-hosting.vercel.app/api/products/${editingId}/images`,
-          fdFiles,
-          { headers: { ...headersJson, "Content-Type": "multipart/form-data" } }
-        );
+        fileImages.forEach((file) => fdFiles.append("images", file));
+        await axios.post(`https://shop-app-hosting.vercel.app/api/products/${editingId}/images`, fdFiles, {
+          headers: { ...headersJson, "Content-Type": "multipart/form-data" },
+        });
       }
 
+      // 2) PATCH other fields (and replace images with URL-only images if provided)
       const patchBody = { ...formData };
-      if (urlImages.length > 0) patchBody.images = urlImages; 
-      await axios.patch(
-        `https://shop-app-hosting.vercel.app/api/products/${editingId}`,
-        patchBody,
-        { headers: headersJson }
-      );
+      if (urlImages.length > 0) patchBody.images = urlImages; // backend accepts array or single
+      await axios.patch(`https://shop-app-hosting.vercel.app/api/products/${editingId}`, patchBody, {
+        headers: headersJson,
+      });
 
       toast.success("Product updated successfully ✅");
     } else {
+      // Create new product: send multipart with both URLs and files under same field name "images"
       const fd = new FormData();
       Object.entries(formData).forEach(([key, value]) => fd.append(key, value));
-      urlImages.forEach(imgObj => fd.append("images", JSON.stringify(imgObj))); // send object as string
-      fileImages.forEach(file => fd.append("images", file));
+      urlImages.forEach((url) => fd.append("images", url));
+      fileImages.forEach((file) => fd.append("images", file));
 
-      await axios.post(
-        "https://shop-app-hosting.vercel.app/api/products",
-        fd,
-        { headers: { ...headersJson, "Content-Type": "multipart/form-data" } }
-      );
-
+      await axios.post("https://shop-app-hosting.vercel.app/api/products", fd, {
+        headers: { ...headersJson, "Content-Type": "multipart/form-data" },
+      });
       toast.success("Product added successfully ✅");
     }
 
@@ -146,7 +134,7 @@ const handleSubmit = async () => {
     toast.error("Error saving product ❌");
   }
 };
-
+// ...existing code...
 
   const handleEdit = (product) => {
     setFormData({
