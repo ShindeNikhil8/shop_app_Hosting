@@ -275,18 +275,55 @@ const OwnerStock = () => {
           </div>
 
           <div className="mt-2">
-            <label className="font-semibold">Upload Images from Device</label>
-            <input type="file" accept="image/*" multiple onChange={handleFileSelect} className="block mt-2" />
-            <div className="flex gap-2 flex-wrap mt-2">
-              {selectedFiles.map((f, idx) => (
-                <div key={idx} className="relative">
-                  <img src={f.preview} alt={`sel-${idx}`} className="w-20 h-20 object-cover rounded border" />
-                  <button type="button" onClick={() => removeSelectedFile(idx)} className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-6 h-6 text-xs">×</button>
-                </div>
-              ))}
-            </div>
-          </div>
+  <label className="font-semibold">Upload Images from Device</label>
+  <input
+    type="file"
+    accept="image/*"
+    multiple
+    onChange={(e) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+      const previews = files.map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+      // Avoid duplicates and revoke old URLs to prevent leaks
+      setSelectedFiles((prev) => {
+        prev.forEach((p) => URL.revokeObjectURL(p.preview));
+        return previews;
+      });
+    }}
+    className="block mt-2 cursor-pointer"
+  />
+
+  {/* Live Previews */}
+  <div className="flex flex-wrap gap-3 mt-3">
+    {selectedFiles.length === 0 ? (
+      <p className="text-gray-500 text-sm">No images selected</p>
+    ) : (
+      selectedFiles.map((f, idx) => (
+        <div key={idx} className="relative group">
+          <img
+            src={f.preview}
+            alt={`preview-${idx}`}
+            className="w-24 h-24 object-cover rounded-lg border shadow-sm group-hover:opacity-80 transition"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              URL.revokeObjectURL(f.preview);
+              setSelectedFiles((prev) => prev.filter((_, i) => i !== idx));
+            }}
+            className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 text-xs font-bold hidden group-hover:block"
+          >
+            ×
+          </button>
         </div>
+      ))
+    )}
+  </div>
+</div>
+
 
         <div className="flex gap-2">
           <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded flex-1">
