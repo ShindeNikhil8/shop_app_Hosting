@@ -95,8 +95,7 @@ const OwnerStock = () => {
       const urlImages = images.filter(img => img.type === "url").map(img => img.data);
       const fileImages = images.filter(img => img.type === "file");
 
-      urlImages.forEach(url => form.append("images", url));
-
+      urlImages.forEach(url => form.append("images[]", url));
       fileImages.forEach(f => form.append("images", f.data));
 
       if (editingId) {
