@@ -3,7 +3,13 @@ import mongoose from "mongoose";
 const productSchema = new mongoose.Schema({
   title: { type: String, required: true },
   desc: { type: String },
-  images: [{ type: String }], // array of image URLs
+  images: [
+  {
+    url: { type: String, required: true },
+    public_id: { type: String },
+  }
+],
+
   price: { type: Number, required: true },
   oldPrice: { type: Number },
   tag: { type: String }, // e.g., Featured, New Arrival
