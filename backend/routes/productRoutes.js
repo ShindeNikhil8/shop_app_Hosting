@@ -39,14 +39,16 @@ router.post("/", protect, upload.array("images", 6), async (req, res) => {
     console.log("Incoming request body:", req.body);
 
     // Ensure images is always an array (can come from req.body or uploaded files)
-    let images = req.body.images;
-    if (images) {
-      images = Array.isArray(images) ? images : [images];
-    } else {
-      images = [];
-    }
+    let images = req.body.images || [];
+    if (!Array.isArray(images)) images = [images];
 
-    // If multer provided files in req.files (memory storage), upload them to Cloudinary
+    const normalizedImages = images.map(img => {
+      if (typeof img === "string") return { url: img }; // convert plain URL to object
+      return img; // already object
+    });
+    images = [...normalizedImages]; // start with URL images
+
+    // Now append uploaded files
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const result = await uploadBufferToCloudinary(file.buffer, {
@@ -56,6 +58,7 @@ router.post("/", protect, upload.array("images", 6), async (req, res) => {
         images.push({ url: result.secure_url, public_id: result.public_id });
       }
     }
+
 
     // Ensure price is a number
     const price = req.body.price ? Number(req.body.price) : 0;

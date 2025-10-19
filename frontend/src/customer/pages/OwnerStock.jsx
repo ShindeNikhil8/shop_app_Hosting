@@ -97,11 +97,12 @@ const OwnerStock = () => {
       });
 
       // Separate files and URL images
-      const urlImages = images.filter(img => img.type === "url").map(img => img.data);
-      const fileImages = images.filter(img => img.type === "file");
+      // Append URL images as plain text field (backend parses req.body.images)
+      urlImages.forEach(url => form.append("images", url)); // not images[]
 
-      urlImages.forEach(url => form.append("images[]", url));
-      fileImages.forEach(f => form.append("images", f.data));
+      // Append file uploads
+      fileImages.forEach(f => form.append("images", f.data)); // keep 'images' field name
+
 
       if (editingId) {
         await axios.patch(`https://shop-app-hosting.vercel.app/api/products/${editingId}`, form, {
