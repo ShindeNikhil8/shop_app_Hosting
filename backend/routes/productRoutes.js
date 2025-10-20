@@ -259,4 +259,37 @@ router.patch("/:id/sell", async (req, res) => {
   }
 });
 
+
+// ✅ Upload images from device and append to a product
+router.post("/:id/device-upload", protect, upload.array("images", 6), async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    if (!req.files || req.files.length === 0)
+      return res.status(400).json({ message: "No files uploaded from device" });
+
+    const uploadedImages = [];
+
+    for (const file of req.files) {
+      const result = await uploadBufferToCloudinary(file.buffer, {
+        folder: "shop_app/products",
+        resource_type: "image",
+      });
+      uploadedImages.push({ url: result.secure_url, public_id: result.public_id });
+    }
+
+    product.images = product.images || [];
+    product.images.push(...uploadedImages);
+
+    await product.save();
+
+    res.status(201).json(product); // returns the updated product with new images
+  } catch (err) {
+    console.error("Device upload error:", err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
 export default router;
